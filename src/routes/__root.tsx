@@ -11,6 +11,10 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { SmartSaveProvider, useSmartSave } from "@/lib/smartsave/store";
+import { AppShell } from "@/components/smartsave/AppShell";
+import { Onboarding } from "@/components/smartsave/Onboarding";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -77,11 +81,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "SmartSave — Learn Money Management with Virtual Money" },
+      { name: "description", content: "SmartSave is a virtual-money simulator that teaches budgeting, saving habits and smart spending decisions." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "SmartSave — Learn Money Management with Virtual Money" },
+      { property: "og:description", content: "Manage a virtual wallet, set goals, take challenges and learn better money habits." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
@@ -92,6 +96,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap",
+      },
     ],
   }),
   shellComponent: RootShell,
@@ -99,6 +109,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
 });
+
+function SmartSaveGate() {
+  const { state, ready } = useSmartSave();
+
+  if (!ready) {
+    return <div className="min-h-screen bg-background" />;
+  }
+
+  if (!state.onboarded) {
+    return <Onboarding />;
+  }
+
+  return (
+    <AppShell>
+      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+      <Outlet />
+    </AppShell>
+  );
+}
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
@@ -119,8 +148,10 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <SmartSaveProvider>
+        <SmartSaveGate />
+        <Toaster />
+      </SmartSaveProvider>
     </QueryClientProvider>
   );
 }

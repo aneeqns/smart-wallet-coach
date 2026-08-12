@@ -15,6 +15,9 @@ import { Route as ChallengesRouteImport } from './routes/challenges'
 import { Route as ExpensesRouteImport } from './routes/expenses'
 import { Route as GoalsRouteImport } from './routes/goals'
 import { Route as InsightsRouteImport } from './routes/insights'
+import { Route as LearnRouteImport } from './routes/learn'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as SavebotRouteImport } from './routes/savebot'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -46,6 +49,21 @@ const InsightsRoute = InsightsRouteImport.update({
   path: '/insights',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LearnRoute = LearnRouteImport.update({
+  id: '/learn',
+  path: '/learn',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SavebotRoute = SavebotRouteImport.update({
+  id: '/savebot',
+  path: '/savebot',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -54,6 +72,9 @@ export interface FileRoutesByFullPath {
   '/expenses': typeof ExpensesRoute
   '/goals': typeof GoalsRoute
   '/insights': typeof InsightsRoute
+  '/learn': typeof LearnRoute
+  '/profile': typeof ProfileRoute
+  '/savebot': typeof SavebotRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +83,9 @@ export interface FileRoutesByTo {
   '/expenses': typeof ExpensesRoute
   '/goals': typeof GoalsRoute
   '/insights': typeof InsightsRoute
+  '/learn': typeof LearnRoute
+  '/profile': typeof ProfileRoute
+  '/savebot': typeof SavebotRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,13 +95,33 @@ export interface FileRoutesById {
   '/expenses': typeof ExpensesRoute
   '/goals': typeof GoalsRoute
   '/insights': typeof InsightsRoute
+  '/learn': typeof LearnRoute
+  '/profile': typeof ProfileRoute
+  '/savebot': typeof SavebotRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/budget' | '/challenges' | '/expenses' | '/goals' | '/insights'
+    | '/'
+    | '/budget'
+    | '/challenges'
+    | '/expenses'
+    | '/goals'
+    | '/insights'
+    | '/learn'
+    | '/profile'
+    | '/savebot'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/budget' | '/challenges' | '/expenses' | '/goals' | '/insights'
+  to:
+    | '/'
+    | '/budget'
+    | '/challenges'
+    | '/expenses'
+    | '/goals'
+    | '/insights'
+    | '/learn'
+    | '/profile'
+    | '/savebot'
   id:
     | '__root__'
     | '/'
@@ -86,6 +130,9 @@ export interface FileRouteTypes {
     | '/expenses'
     | '/goals'
     | '/insights'
+    | '/learn'
+    | '/profile'
+    | '/savebot'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -95,6 +142,9 @@ export interface RootRouteChildren {
   ExpensesRoute: typeof ExpensesRoute
   GoalsRoute: typeof GoalsRoute
   InsightsRoute: typeof InsightsRoute
+  LearnRoute: typeof LearnRoute
+  ProfileRoute: typeof ProfileRoute
+  SavebotRoute: typeof SavebotRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -141,6 +191,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InsightsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/learn': {
+      id: '/learn'
+      path: '/learn'
+      fullPath: '/learn'
+      preLoaderRoute: typeof LearnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/savebot': {
+      id: '/savebot'
+      path: '/savebot'
+      fullPath: '/savebot'
+      preLoaderRoute: typeof SavebotRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -151,6 +222,9 @@ const rootRouteChildren: RootRouteChildren = {
   ExpensesRoute: ExpensesRoute,
   GoalsRoute: GoalsRoute,
   InsightsRoute: InsightsRoute,
+  LearnRoute: LearnRoute,
+  ProfileRoute: ProfileRoute,
+  SavebotRoute: SavebotRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
