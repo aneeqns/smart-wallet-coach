@@ -7,6 +7,7 @@ import { computeScore, computeStats, money } from "@/lib/smartsave/selectors";
 import { PageHeader, SectionCard } from "@/components/smartsave/ui-bits";
 import type { SmartSaveState } from "@/lib/smartsave/types";
 import type { Stats } from "@/lib/smartsave/selectors";
+import savebotAsset from "@/assets/savebot.png.asset.json";
 
 export const Route = createFileRoute("/savebot")({
   head: () => ({
