@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BudgetRouteImport } from './routes/budget'
 import { Route as ChallengesRouteImport } from './routes/challenges'
+import { Route as CoachRouteImport } from './routes/coach'
 import { Route as ExpensesRouteImport } from './routes/expenses'
 import { Route as GoalsRouteImport } from './routes/goals'
 import { Route as InsightsRouteImport } from './routes/insights'
@@ -32,6 +33,11 @@ const BudgetRoute = BudgetRouteImport.update({
 const ChallengesRoute = ChallengesRouteImport.update({
   id: '/challenges',
   path: '/challenges',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoachRoute = CoachRouteImport.update({
+  id: '/coach',
+  path: '/coach',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExpensesRoute = ExpensesRouteImport.update({
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/budget': typeof BudgetRoute
   '/challenges': typeof ChallengesRoute
+  '/coach': typeof CoachRoute
   '/expenses': typeof ExpensesRoute
   '/goals': typeof GoalsRoute
   '/insights': typeof InsightsRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/budget': typeof BudgetRoute
   '/challenges': typeof ChallengesRoute
+  '/coach': typeof CoachRoute
   '/expenses': typeof ExpensesRoute
   '/goals': typeof GoalsRoute
   '/insights': typeof InsightsRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/budget': typeof BudgetRoute
   '/challenges': typeof ChallengesRoute
+  '/coach': typeof CoachRoute
   '/expenses': typeof ExpensesRoute
   '/goals': typeof GoalsRoute
   '/insights': typeof InsightsRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/'
     | '/budget'
     | '/challenges'
+    | '/coach'
     | '/expenses'
     | '/goals'
     | '/insights'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/'
     | '/budget'
     | '/challenges'
+    | '/coach'
     | '/expenses'
     | '/goals'
     | '/insights'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/'
     | '/budget'
     | '/challenges'
+    | '/coach'
     | '/expenses'
     | '/goals'
     | '/insights'
@@ -139,6 +151,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BudgetRoute: typeof BudgetRoute
   ChallengesRoute: typeof ChallengesRoute
+  CoachRoute: typeof CoachRoute
   ExpensesRoute: typeof ExpensesRoute
   GoalsRoute: typeof GoalsRoute
   InsightsRoute: typeof InsightsRoute
@@ -168,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/challenges'
       fullPath: '/challenges'
       preLoaderRoute: typeof ChallengesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/coach': {
+      id: '/coach'
+      path: '/coach'
+      fullPath: '/coach'
+      preLoaderRoute: typeof CoachRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/expenses': {
@@ -219,6 +239,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BudgetRoute: BudgetRoute,
   ChallengesRoute: ChallengesRoute,
+  CoachRoute: CoachRoute,
   ExpensesRoute: ExpensesRoute,
   GoalsRoute: GoalsRoute,
   InsightsRoute: InsightsRoute,
