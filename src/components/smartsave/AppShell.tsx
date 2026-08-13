@@ -15,6 +15,7 @@ const NAV = [
   { to: "/budget", emoji: "📊", label: "Budget" },
   { to: "/learn", emoji: "🧠", label: "Learn" },
   { to: "/savebot", emoji: "🤖", label: "SaveBot" },
+  { to: "/coach", emoji: "🌱", label: "Savings Coach" },
   { to: "/challenges", emoji: "🏆", label: "Challenges" },
   { to: "/insights", emoji: "📈", label: "Insights" },
   { to: "/profile", emoji: "👤", label: "Profile" },
