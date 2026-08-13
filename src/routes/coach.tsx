@@ -149,7 +149,7 @@ function CoachPage() {
             {loading ? (
               <p className="animate-pulse text-sm text-muted-foreground">Reviewing your spending and building a plan…</p>
             ) : (
-              <div className="prose prose-sm max-w-none dark:prose-invert [&_li]:my-1 [&_p]:my-2 text-sm">
+              <div className="max-w-none text-sm [&_h1]:font-display [&_h1]:text-base [&_h1]:font-bold [&_h2]:mt-4 [&_h2]:font-display [&_h2]:text-sm [&_h2]:font-bold [&_li]:my-1 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:my-2 [&_strong]:font-semibold [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-5">
                 <ReactMarkdown>{advice ?? ""}</ReactMarkdown>
               </div>
             )}
