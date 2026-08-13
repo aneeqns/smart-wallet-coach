@@ -6,6 +6,7 @@ import { computeStats, levelFor, money } from "@/lib/smartsave/selectors";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import logoAsset from "@/assets/smartsave-logo.png.asset.json";
 
 const NAV = [
   { to: "/", emoji: "🏠", label: "Dashboard" },
@@ -106,7 +107,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 function Brand() {
   return (
     <Link to="/" className="flex items-center gap-2.5">
-      <span className="grid size-10 place-items-center rounded-2xl bg-hero-gradient text-lg shadow-soft">🐷</span>
+      <img src={logoAsset.url} alt="SmartSave logo" className="size-10 rounded-2xl object-contain" />
       <span>
         <span className="block font-display text-lg font-extrabold leading-none">SmartSave</span>
         <span className="block text-[11px] text-muted-foreground">Learn money by doing</span>

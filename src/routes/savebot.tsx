@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useSmartSave } from "@/lib/smartsave/store";
 import { computeScore, computeStats, money } from "@/lib/smartsave/selectors";
-import { PageHeader, SectionCard } from "@/components/smartsave/ui-bits";
+import { SectionCard } from "@/components/smartsave/ui-bits";
 import type { SmartSaveState } from "@/lib/smartsave/types";
 import type { Stats } from "@/lib/smartsave/selectors";
+import savebotAsset from "@/assets/savebot.png.asset.json";
 
 export const Route = createFileRoute("/savebot")({
   head: () => ({
@@ -88,12 +89,23 @@ function SaveBotPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader emoji="🤖" title="SaveBot" subtitle="An educational coach for budgeting and saving — no investment or financial product advice." />
+      <div className="flex items-center gap-4">
+        <img src={savebotAsset.url} alt="SaveBot mascot" className="size-16 shrink-0 object-contain" />
+        <div>
+          <h1 className="font-display text-2xl font-extrabold">SaveBot</h1>
+          <p className="text-sm text-muted-foreground">
+            An educational coach for budgeting and saving — no investment or financial product advice.
+          </p>
+        </div>
+      </div>
 
       <SectionCard>
         <div className="space-y-3">
           {messages.map((m, i) => (
-            <div key={i} className={m.role === "user" ? "flex justify-end" : "flex justify-start"}>
+            <div key={i} className={m.role === "user" ? "flex justify-end" : "flex items-end justify-start gap-2"}>
+              {m.role === "bot" && (
+                <img src={savebotAsset.url} alt="" className="size-8 shrink-0 object-contain" />
+              )}
               <p
                 className={
                   m.role === "user"
