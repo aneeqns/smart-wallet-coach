@@ -33,7 +33,7 @@ function ProfilePage() {
 
       <SectionCard className="bg-hero-gradient text-primary-foreground border-transparent">
         <div className="flex flex-wrap items-center gap-4">
-          <span className="grid size-16 place-items-center rounded-3xl bg-background/25 text-3xl">🐷</span>
+          <span className="grid size-16 place-items-center rounded-3xl bg-background/25 text-3xl">🙂</span>
           <div>
             <h2 className="text-2xl font-extrabold">{state.name || "Saver"}</h2>
             <p className="text-sm opacity-90">
