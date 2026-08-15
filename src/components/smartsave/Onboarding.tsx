@@ -9,6 +9,7 @@ import { useSmartSave } from "@/lib/smartsave/store";
 import { CATEGORIES, GOAL_PRESETS, LEARN_INTERESTS, MODES, defaultGoals, sampleExpenses } from "@/lib/smartsave/data";
 import { money } from "@/lib/smartsave/selectors";
 import type { Allocation, CategoryId, ChallengeMode } from "@/lib/smartsave/types";
+import logoAsset from "@/assets/smartsave-logo.png.asset.json";
 
 const PRESET_AMOUNTS = [100, 250, 500, 1000, 2500, 5000];
 const DURATIONS = [7, 14, 30, 60, 90];
@@ -87,7 +88,7 @@ export function Onboarding() {
     <div className="min-h-screen bg-background">
       <div className="mx-auto w-full max-w-3xl px-4 py-10">
         <div className="mb-8 flex items-center gap-3">
-          <span className="grid size-12 place-items-center rounded-2xl bg-hero-gradient text-2xl shadow-soft">🐷</span>
+          <img src={logoAsset.url} alt="SmartSave logo" className="size-12 rounded-2xl bg-white object-contain p-1 shadow-soft" />
           <div>
             <h1 className="text-2xl font-extrabold">SmartSave</h1>
             <p className="text-xs text-muted-foreground">Virtual money · educational simulation</p>
