@@ -36,6 +36,8 @@ function InsightsPage() {
         <StatCard emoji="🧠" label="SmartSave score" value={`${score.score}/100`} hint={score.label} />
       </div>
 
+      <SmartSuggestions limit={4} />
+
       <div className="grid gap-6 lg:grid-cols-2">
         <SectionCard title="What we noticed">
           <ul className="space-y-3">
