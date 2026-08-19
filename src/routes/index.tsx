@@ -155,6 +155,8 @@ function Dashboard() {
         />
       </div>
 
+      <SmartSuggestions />
+
       <div className="grid gap-6 lg:grid-cols-2">
         <LifeEventCard />
         <SectionCard title="Quick insights" desc="What your numbers are telling you">
