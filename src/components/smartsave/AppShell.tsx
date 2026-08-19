@@ -18,6 +18,7 @@ const NAV = [
   { to: "/coach", emoji: "🌱", label: "Savings Coach" },
   { to: "/challenges", emoji: "🏆", label: "Challenges" },
   { to: "/insights", emoji: "📈", label: "Insights" },
+  { to: "/simulator", emoji: "🔮", label: "What If?" },
   { to: "/profile", emoji: "👤", label: "Profile" },
 ] as const;
 
