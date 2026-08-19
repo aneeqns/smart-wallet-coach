@@ -7,6 +7,7 @@ import { useSmartSave } from "@/lib/smartsave/store";
 import { buildInsights, computeScore, computeStats, money } from "@/lib/smartsave/selectors";
 import { LIFE_EVENTS } from "@/lib/smartsave/data";
 import { PageHeader, SectionCard, StatCard, TipBox } from "@/components/smartsave/ui-bits";
+import { SmartSuggestions } from "@/components/smartsave/SmartSuggestions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
