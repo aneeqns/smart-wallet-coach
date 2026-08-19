@@ -4,6 +4,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { useSmartSave } from "@/lib/smartsave/store";
 import { buildInsights, computeScore, computeStats, money } from "@/lib/smartsave/selectors";
 import { PageHeader, SectionCard, StatCard, TipBox } from "@/components/smartsave/ui-bits";
+import { SmartSuggestions } from "@/components/smartsave/SmartSuggestions";
 import { Progress } from "@/components/ui/progress";
 
 export const Route = createFileRoute("/insights")({
@@ -35,6 +36,8 @@ function InsightsPage() {
         <StatCard emoji="🎯" label="Goal progress" value={`${stats.goalProgress}%`} />
         <StatCard emoji="🧠" label="SmartSave score" value={`${score.score}/100`} hint={score.label} />
       </div>
+
+      <SmartSuggestions limit={4} />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <SectionCard title="What we noticed">
