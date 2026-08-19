@@ -77,4 +77,5 @@ export interface SmartSaveState {
   streak: number;
   startedAt: string;
   theme: "light" | "dark";
+  loggedOut?: boolean;
 }
