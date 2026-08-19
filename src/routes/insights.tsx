@@ -4,6 +4,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { useSmartSave } from "@/lib/smartsave/store";
 import { buildInsights, computeScore, computeStats, money } from "@/lib/smartsave/selectors";
 import { PageHeader, SectionCard, StatCard, TipBox } from "@/components/smartsave/ui-bits";
+import { SmartSuggestions } from "@/components/smartsave/SmartSuggestions";
 import { Progress } from "@/components/ui/progress";
 
 export const Route = createFileRoute("/insights")({
