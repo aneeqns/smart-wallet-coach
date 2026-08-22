@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Moon, Sun, Menu, X } from "lucide-react";
+import { Moon, Sun, Menu, X, LogOut } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useSmartSave } from "@/lib/smartsave/store";
 import { computeStats, levelFor, money } from "@/lib/smartsave/selectors";
@@ -23,7 +23,7 @@ const NAV = [
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { state, toggleTheme } = useSmartSave();
+  const { state, toggleTheme, logout } = useSmartSave();
   const stats = computeStats(state);
   const lvl = levelFor(state.xp);
   const [open, setOpen] = useState(false);
@@ -93,6 +93,10 @@ export function AppShell({ children }: { children: ReactNode }) {
             </div>
             <Button variant="secondary" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
               {state.theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+            </Button>
+            <Button variant="outline" size="sm" onClick={logout} className="gap-2">
+              <LogOut className="size-4" />
+              <span className="hidden sm:inline">Log out</span>
             </Button>
           </div>
         </header>
