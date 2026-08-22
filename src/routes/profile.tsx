@@ -20,7 +20,7 @@ export const Route = createFileRoute("/profile")({
 });
 
 function ProfilePage() {
-  const { state, reset } = useSmartSave();
+  const { state, reset, logout } = useSmartSave();
   const stats = useMemo(() => computeStats(state), [state]);
   const score = computeScore(state, stats);
   const lvl = levelFor(state.xp);
@@ -91,8 +91,11 @@ function ProfilePage() {
         </SectionCard>
       </div>
 
-      <SectionCard title="Restart the simulation" desc="Clears your virtual money, expenses and progress, then runs onboarding again.">
-        <Button variant="destructive" onClick={reset}>Reset SmartSave</Button>
+      <SectionCard title="Session" desc="Log out to switch user, or reset to clear your virtual money, expenses and progress.">
+        <div className="flex flex-wrap gap-3">
+          <Button variant="secondary" onClick={logout}>Log out</Button>
+          <Button variant="destructive" onClick={reset}>Reset SmartSave</Button>
+        </div>
       </SectionCard>
     </div>
   );

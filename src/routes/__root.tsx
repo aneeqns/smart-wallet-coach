@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SmartSaveProvider, useSmartSave } from "@/lib/smartsave/store";
 import { AppShell } from "@/components/smartsave/AppShell";
 import { Onboarding } from "@/components/smartsave/Onboarding";
+import { Welcome } from "@/components/smartsave/Welcome";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -115,6 +116,10 @@ function SmartSaveGate() {
 
   if (!ready) {
     return <div className="min-h-screen bg-background" />;
+  }
+
+  if (state.loggedOut) {
+    return <Welcome />;
   }
 
   if (!state.onboarded) {
