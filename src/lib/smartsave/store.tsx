@@ -26,6 +26,8 @@ interface Ctx {
   completeLesson: (id: string, correct: number, xp: number) => void;
   reset: () => void;
   toggleTheme: () => void;
+  logout: () => void;
+  login: () => void;
 }
 
 const SmartSaveContext = createContext<Ctx | null>(null);
@@ -120,6 +122,14 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
     setState(initialState());
   }, []);
 
+  const logout = useCallback(() => {
+    setState((s) => ({ ...s, loggedOut: true }));
+  }, []);
+
+  const login = useCallback(() => {
+    setState((s) => ({ ...s, loggedOut: false }));
+  }, []);
+
   const toggleTheme = useCallback(() => {
     setState((s) => ({ ...s, theme: s.theme === "dark" ? "light" : "dark" }));
   }, []);
@@ -139,8 +149,10 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
       completeLesson,
       reset,
       toggleTheme,
+      logout,
+      login,
     }),
-    [state, ready, update, addExpense, removeExpense, addGoal, updateGoal, removeGoal, contributeToGoal, addXp, completeLesson, reset, toggleTheme],
+    [state, ready, update, addExpense, removeExpense, addGoal, updateGoal, removeGoal, contributeToGoal, addXp, completeLesson, reset, toggleTheme, logout, login],
   );
 
   return <SmartSaveContext.Provider value={value}>{children}</SmartSaveContext.Provider>;
