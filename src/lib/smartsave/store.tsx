@@ -122,8 +122,10 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
     if (!id) return;
     localStorage.setItem(stateKey(id), JSON.stringify(state));
     setAccounts((list) => {
-      const next = list.map((a) =>
-        a.id === id ? { ...a, name: state.name || a.name, email: state.email ?? a.email, avatar: state.avatar ?? a.avatar } : a,
+      const next: SavedAccount[] = list.map((a) =>
+        a.id === id
+          ? { ...a, name: state.name || a.name, email: state.email ?? a.email ?? "", avatar: state.avatar ?? a.avatar ?? "" }
+          : a,
       );
       localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(next));
       return next;
