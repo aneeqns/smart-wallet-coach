@@ -236,7 +236,8 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(next));
       return next;
     });
-    localStorage.removeItem(stateKey(id));
+    // The profile's saved data is intentionally left in place — only the
+    // remembered-account entry is forgotten on this device.
     if (activeRef.current === id) {
       localStorage.removeItem(ACTIVE_KEY);
       setActiveId(null);
