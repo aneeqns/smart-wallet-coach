@@ -4,17 +4,23 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
 import { CHALLENGES, LESSONS, initialState } from "./data";
-import type { Expense, Goal, SmartSaveState } from "./types";
+import type { Expense, Goal, SavedAccount, SmartSaveState } from "./types";
 
-const KEY = "smartsave.state.v1";
+const LEGACY_KEY = "smartsave.state.v1";
+const ACCOUNTS_KEY = "smartsave.accounts.v1";
+const ACTIVE_KEY = "smartsave.activeAccount.v1";
+const stateKey = (id: string) => `smartsave.state.v1:${id}`;
 
 interface Ctx {
   state: SmartSaveState;
   ready: boolean;
+  accounts: SavedAccount[];
+  activeId: string | null;
   update: (patch: Partial<SmartSaveState>) => void;
   addExpense: (e: Omit<Expense, "id">) => void;
   removeExpense: (id: string) => void;
@@ -27,44 +33,104 @@ interface Ctx {
   reset: () => void;
   toggleTheme: () => void;
   logout: () => void;
-  login: () => void;
+  login: (id: string) => void;
+  newAccount: () => void;
+  removeAccount: (id: string) => void;
 }
 
 const SmartSaveContext = createContext<Ctx | null>(null);
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
+const hydrate = (parsed: Partial<SmartSaveState>): SmartSaveState => ({
+  ...initialState(),
+  ...parsed,
+  challenges: CHALLENGES.map(
+    (c) => parsed.challenges?.find((x) => x.id === c.id) ?? { id: c.id, progress: 0, completed: false },
+  ),
+  lessons: LESSONS.map((l) => parsed.lessons?.find((x) => x.id === l.id) ?? { id: l.id, completed: false, correct: 0 }),
+});
+
+const readAccounts = (): SavedAccount[] => {
+  try {
+    const raw = localStorage.getItem(ACCOUNTS_KEY);
+    const parsed = raw ? (JSON.parse(raw) as SavedAccount[]) : [];
+    return Array.isArray(parsed) ? parsed.filter((a) => a && typeof a.id === "string") : [];
+  } catch {
+    return [];
+  }
+};
+
+const readState = (id: string): SmartSaveState | null => {
+  try {
+    const raw = localStorage.getItem(stateKey(id));
+    return raw ? hydrate(JSON.parse(raw) as SmartSaveState) : null;
+  } catch {
+    return null;
+  }
+};
+
 export function SmartSaveProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<SmartSaveState>(initialState);
+  const [accounts, setAccounts] = useState<SavedAccount[]>([]);
+  const [activeId, setActiveId] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const activeRef = useRef<string | null>(null);
+  activeRef.current = activeId;
 
+  // Load remembered accounts + active session
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as SmartSaveState;
-        setState({
-          ...initialState(),
-          ...parsed,
-          challenges: CHALLENGES.map(
-            (c) => parsed.challenges?.find((x) => x.id === c.id) ?? { id: c.id, progress: 0, completed: false },
-          ),
-          lessons: LESSONS.map(
-            (l) => parsed.lessons?.find((x) => x.id === l.id) ?? { id: l.id, completed: false, correct: 0 },
-          ),
-        });
+    let list = readAccounts();
+
+    // Migrate a legacy single-profile save into the account list.
+    const legacyRaw = localStorage.getItem(LEGACY_KEY);
+    if (legacyRaw) {
+      try {
+        const legacy = hydrate(JSON.parse(legacyRaw) as SmartSaveState);
+        const id = uid();
+        localStorage.setItem(stateKey(id), JSON.stringify(legacy));
+        list = [
+          { id, name: legacy.name || "Saver", email: legacy.email ?? "", avatar: legacy.avatar ?? "", lastUsedAt: new Date().toISOString() },
+          ...list,
+        ];
+        localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(list));
+        if (!legacy.loggedOut) localStorage.setItem(ACTIVE_KEY, id);
+      } catch {
+        /* ignore corrupted legacy state */
       }
-    } catch {
-      /* ignore corrupted state */
+      localStorage.removeItem(LEGACY_KEY);
+    }
+
+    setAccounts(list);
+
+    const active = localStorage.getItem(ACTIVE_KEY);
+    if (active && list.some((a) => a.id === active)) {
+      const loaded = readState(active);
+      if (loaded) {
+        setState(loaded);
+        setActiveId(active);
+      }
     }
     setReady(true);
   }, []);
 
+  // Persist active account state + keep its directory entry fresh
   useEffect(() => {
     if (!ready) return;
-    localStorage.setItem(KEY, JSON.stringify(state));
     document.documentElement.classList.toggle("dark", state.theme === "dark");
-  }, [state, ready]);
+    const id = activeId;
+    if (!id) return;
+    localStorage.setItem(stateKey(id), JSON.stringify(state));
+    setAccounts((list) => {
+      const next: SavedAccount[] = list.map((a) =>
+        a.id === id
+          ? { ...a, name: state.name || a.name, email: state.email ?? a.email ?? "", avatar: state.avatar ?? a.avatar ?? "" }
+          : a,
+      );
+      localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(next));
+      return next;
+    });
+  }, [state, ready, activeId]);
 
   const update = useCallback((patch: Partial<SmartSaveState>) => {
     setState((s) => ({ ...s, ...patch }));
@@ -117,17 +183,75 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const reset = useCallback(() => {
-    localStorage.removeItem(KEY);
-    setState(initialState());
+  /** Remember an account (no duplicates) and move it to the top of the list. */
+  const rememberAccount = useCallback((account: SavedAccount) => {
+    setAccounts((list) => {
+      const existing = list.find((a) => a.id === account.id);
+      const merged: SavedAccount = { ...existing, ...account, lastUsedAt: new Date().toISOString() };
+      const next = [merged, ...list.filter((a) => a.id !== account.id)];
+      localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(next));
+      return next;
+    });
   }, []);
+
+  const login = useCallback(
+    (id: string) => {
+      const loaded = readState(id) ?? initialState();
+      setState(loaded);
+      setActiveId(id);
+      localStorage.setItem(ACTIVE_KEY, id);
+      rememberAccount({
+        id,
+        name: loaded.name || "Saver",
+        email: loaded.email ?? "",
+        avatar: loaded.avatar ?? "",
+        lastUsedAt: new Date().toISOString(),
+      });
+    },
+    [rememberAccount],
+  );
+
+  const newAccount = useCallback(() => {
+    const id = uid();
+    const fresh = { ...initialState(), id };
+    localStorage.setItem(stateKey(id), JSON.stringify(fresh));
+    setState(fresh);
+    setActiveId(id);
+    localStorage.setItem(ACTIVE_KEY, id);
+    rememberAccount({ id, name: "", email: "", avatar: "", lastUsedAt: new Date().toISOString() });
+  }, [rememberAccount]);
 
   const logout = useCallback(() => {
-    setState((s) => ({ ...s, loggedOut: true }));
+    const id = activeRef.current;
+    if (id) {
+      rememberAccount({ id, name: state.name || "Saver", email: state.email ?? "", avatar: state.avatar ?? "", lastUsedAt: new Date().toISOString() });
+    }
+    localStorage.removeItem(ACTIVE_KEY);
+    setActiveId(null);
+    setState(initialState());
+  }, [rememberAccount, state.name, state.email, state.avatar]);
+
+  /** Forget an account on this device only — its saved data stays untouched unless it is the removed profile. */
+  const removeAccount = useCallback((id: string) => {
+    setAccounts((list) => {
+      const next = list.filter((a) => a.id !== id);
+      localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(next));
+      return next;
+    });
+    // The profile's saved data is intentionally left in place — only the
+    // remembered-account entry is forgotten on this device.
+    if (activeRef.current === id) {
+      localStorage.removeItem(ACTIVE_KEY);
+      setActiveId(null);
+      setState(initialState());
+    }
   }, []);
 
-  const login = useCallback(() => {
-    setState((s) => ({ ...s, loggedOut: false }));
+  const reset = useCallback(() => {
+    const id = activeRef.current;
+    const fresh = initialState();
+    if (id) localStorage.setItem(stateKey(id), JSON.stringify({ ...fresh, id }));
+    setState(fresh);
   }, []);
 
   const toggleTheme = useCallback(() => {
@@ -138,6 +262,8 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
     () => ({
       state,
       ready,
+      accounts,
+      activeId,
       update,
       addExpense,
       removeExpense,
@@ -151,8 +277,10 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
       toggleTheme,
       logout,
       login,
+      newAccount,
+      removeAccount,
     }),
-    [state, ready, update, addExpense, removeExpense, addGoal, updateGoal, removeGoal, contributeToGoal, addXp, completeLesson, reset, toggleTheme, logout, login],
+    [state, ready, accounts, activeId, update, addExpense, removeExpense, addGoal, updateGoal, removeGoal, contributeToGoal, addXp, completeLesson, reset, toggleTheme, logout, login, newAccount, removeAccount],
   );
 
   return <SmartSaveContext.Provider value={value}>{children}</SmartSaveContext.Provider>;

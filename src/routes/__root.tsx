@@ -112,13 +112,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function SmartSaveGate() {
-  const { state, ready } = useSmartSave();
+  const { state, ready, activeId } = useSmartSave();
 
   if (!ready) {
     return <div className="min-h-screen bg-background" />;
   }
 
-  if (state.loggedOut) {
+  if (!activeId) {
     return <Welcome />;
   }
 

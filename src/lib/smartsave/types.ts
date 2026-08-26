@@ -78,4 +78,20 @@ export interface SmartSaveState {
   startedAt: string;
   theme: "light" | "dark";
   loggedOut?: boolean;
+  /** Local profile id this state belongs to. */
+  id?: string;
+  email?: string;
+  avatar?: string;
+}
+
+/**
+ * Minimal, non-sensitive info about a previously used account, kept on this
+ * device so the login screen can offer it again. Never contains passwords.
+ */
+export interface SavedAccount {
+  id: string;
+  name: string;
+  email?: string;
+  avatar?: string;
+  lastUsedAt?: string;
 }

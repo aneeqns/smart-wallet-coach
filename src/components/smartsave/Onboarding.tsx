@@ -19,6 +19,7 @@ export function Onboarding() {
   const { update } = useSmartSave();
   const [step, setStep] = useState(0);
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [goalIdx, setGoalIdx] = useState(1);
   const [customGoalName, setCustomGoalName] = useState("");
   const [goalTarget, setGoalTarget] = useState(800);
@@ -70,6 +71,7 @@ export function Onboarding() {
     update({
       onboarded: true,
       name: name.trim() || "Saver",
+      email: email.trim(),
       mode,
       durationDays: duration,
       confidence,
@@ -118,6 +120,20 @@ export function Onboarding() {
                   placeholder="Your name"
                   className="mt-2"
                 />
+              </div>
+              <div>
+                <Label htmlFor="email">Email (optional)</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  className="mt-2"
+                />
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  Only used to label this account on the sign-in screen of this device.
+                </p>
               </div>
             </div>
           )}
