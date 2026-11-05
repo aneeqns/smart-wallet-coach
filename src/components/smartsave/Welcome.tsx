@@ -48,7 +48,14 @@ export function Welcome() {
                       </span>
                     )}
                     <span className="min-w-0">
-                      <span className="block truncate text-sm font-semibold">{a.name}</span>
+                      <span className="flex items-center gap-2">
+                        <span className="truncate text-sm font-semibold">{a.name || "Unnamed saver"}</span>
+                        {!a.name && (
+                          <span className="shrink-0 rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">
+                            Incomplete profile
+                          </span>
+                        )}
+                      </span>
                       <span className="block truncate text-xs text-muted-foreground">
                         {a.email || "Virtual demo account"}
                       </span>
