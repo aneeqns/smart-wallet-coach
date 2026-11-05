@@ -11,9 +11,7 @@ import logoAsset from "@/assets/smartsave-logo.png.asset.json";
 
 export function Welcome() {
   const { accounts, login, newAccount, removeAccount } = useSmartSave();
-  const saved = [...accounts]
-    .filter((a) => a.name)
-    .sort((a, b) => (b.lastUsedAt ?? "").localeCompare(a.lastUsedAt ?? ""));
+  const saved = [...accounts].sort((a, b) => (b.lastUsedAt ?? "").localeCompare(a.lastUsedAt ?? ""));
 
   return (
     <div className="grid min-h-screen place-items-center bg-background px-4 py-10">
@@ -50,7 +48,14 @@ export function Welcome() {
                       </span>
                     )}
                     <span className="min-w-0">
-                      <span className="block truncate text-sm font-semibold">{a.name}</span>
+                      <span className="flex items-center gap-2">
+                        <span className="truncate text-sm font-semibold">{a.name || "Unnamed saver"}</span>
+                        {!a.name && (
+                          <span className="shrink-0 rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">
+                            Incomplete profile
+                          </span>
+                        )}
+                      </span>
                       <span className="block truncate text-xs text-muted-foreground">
                         {a.email || "Virtual demo account"}
                       </span>
@@ -58,7 +63,7 @@ export function Welcome() {
                   </button>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" aria-label={`Options for ${a.name}`}>
+                      <Button variant="ghost" size="icon" aria-label={`Options for ${a.name || "unnamed account"}`}>
                         <MoreVertical className="size-4" />
                       </Button>
                     </DropdownMenuTrigger>
