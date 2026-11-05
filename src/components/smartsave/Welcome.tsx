@@ -63,7 +63,7 @@ export function Welcome() {
                   </button>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" aria-label={`Options for ${a.name}`}>
+                      <Button variant="ghost" size="icon" aria-label={`Options for ${a.name || "unnamed account"}`}>
                         <MoreVertical className="size-4" />
                       </Button>
                     </DropdownMenuTrigger>
