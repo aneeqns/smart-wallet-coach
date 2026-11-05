@@ -11,9 +11,7 @@ import logoAsset from "@/assets/smartsave-logo.png.asset.json";
 
 export function Welcome() {
   const { accounts, login, newAccount, removeAccount } = useSmartSave();
-  const saved = [...accounts]
-    .filter((a) => a.name)
-    .sort((a, b) => (b.lastUsedAt ?? "").localeCompare(a.lastUsedAt ?? ""));
+  const saved = [...accounts].sort((a, b) => (b.lastUsedAt ?? "").localeCompare(a.lastUsedAt ?? ""));
 
   return (
     <div className="grid min-h-screen place-items-center bg-background px-4 py-10">
