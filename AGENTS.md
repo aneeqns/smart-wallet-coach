@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Use Cloud Auth identities and owner-scoped Cloud rows for synced simulation state; retain local profiles as explicit import sources to avoid data loss.
+- Serialize Cloud writes and flush before logout; load Cloud state before enabling writes to prevent fresh defaults overwriting saved progress.
