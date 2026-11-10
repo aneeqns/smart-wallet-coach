@@ -10,6 +10,11 @@ import {
 } from "react";
 import { CHALLENGES, LESSONS, initialState } from "./data";
 import type { Expense, Goal, SavedAccount, SmartSaveState } from "./types";
+import { supabase } from '@/integrations/supabase/client';
+import type { User } from '@supabase/supabase-js';
+import type { Json } from '@/integrations/supabase/types';
+import { toast } from 'sonner';
+import { remember, chooseCloudState } from './accounts';
 
 const LEGACY_KEY = "smartsave.state.v1";
 const ACCOUNTS_KEY = "smartsave.accounts.v1";
@@ -36,6 +41,11 @@ interface Ctx {
   login: (id: string) => void;
   newAccount: () => void;
   removeAccount: (id: string) => void;
+  cloudUser: User | null;
+  authRequested: boolean;
+  authEmail: string;
+  cancelAuth: () => void;
+  syncStatus: string;
 }
 
 const SmartSaveContext = createContext<Ctx | null>(null);
@@ -76,6 +86,29 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
   const activeRef = useRef<string | null>(null);
+  const [cloudUser, setCloudUser] = useState<User | null>(null);
+  const [authRequested, setAuthRequested] = useState(false);
+  const [authEmail, setAuthEmail] = useState('');
+  const [syncStatus, setSyncStatus] = useState('Saved on this device');
+  const cloudRef = useRef<string | null>(null);
+  const selectedLocal = useRef<string | null>(null);
+  const currentState = useRef(state);
+  currentState.current = state;
+  const writeQueue = useRef<Promise<void>>(Promise.resolve());
+  const lastSaved = useRef('');
+  const saveCloud = useCallback((id: string, snapshot: SmartSaveState) => {
+    setSyncStatus('Saving…');
+    const run = writeQueue.current.catch(() => {}).then(async () => {
+      const { error } = await supabase.from('smartsave_states').upsert({ user_id: id, state: snapshot as unknown as Json, updated_at: new Date().toISOString() });
+      if (error) throw error;
+      const { error: profileError } = await supabase.from('profiles').update({ display_name: snapshot.name, avatar: snapshot.avatar ?? '', preferences: { theme: snapshot.theme, learnInterests: snapshot.learnInterests } }).eq('id', id);
+      if (profileError) throw profileError;
+      lastSaved.current = JSON.stringify(snapshot);
+      setSyncStatus('Saved to Cloud');
+    });
+    writeQueue.current = run;
+    return run.catch((error) => { setSyncStatus('Not saved — retry needed'); toast.error('Cloud saving failed. Your device copy is safe.'); throw error; });
+  }, []);
   activeRef.current = activeId;
 
   // Load remembered accounts + active session
@@ -113,6 +146,69 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
     }
     setReady(true);
   }, []);
+
+  useEffect(() => {
+    let generation = 0;
+    let alive = true;
+    const load = async (user: User | null) => {
+      const version = ++generation;
+      cloudRef.current = null;
+      setCloudUser(user);
+      if (!user) return;
+      setReady(false);
+      try {
+        const [{ data, error }, { data: profile, error: profileError }] = await Promise.all([
+          supabase.from('smartsave_states').select('state').eq('user_id', user.id).maybeSingle(),
+          supabase.from('profiles').select('*').eq('id', user.id).single(),
+        ]);
+        if (error || profileError) throw error ?? profileError;
+        if (!alive || version !== generation) return;
+        const source = selectedLocal.current ? readState(selectedLocal.current) : null;
+        const loaded = chooseCloudState(data ? hydrate(data.state as unknown as SmartSaveState) : null, source, { ...initialState(), name: profile?.display_name ?? '', avatar: profile?.avatar ?? '' });
+        const snapshot = { ...loaded, id: user.id, email: user.email ?? '' };
+        if (!data) await saveCloud(user.id, snapshot);
+        if (!alive || version !== generation) return;
+        const list = remember(readAccounts(), { id: user.id, name: snapshot.name, email: snapshot.email, avatar: snapshot.avatar, cloud: true, lastUsedAt: new Date().toISOString() });
+        localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(list));
+        localStorage.setItem(ACTIVE_KEY, user.id);
+        localStorage.setItem(stateKey(user.id), JSON.stringify(snapshot));
+        setAccounts(list);
+        setState(snapshot);
+        setActiveId(user.id);
+        cloudRef.current = user.id;
+        lastSaved.current = JSON.stringify(snapshot);
+        selectedLocal.current = null;
+        setAuthRequested(false);
+        setSyncStatus('Saved to Cloud');
+      } catch {
+        setActiveId(null);
+        setSyncStatus('Cloud could not load');
+        toast.error('Could not load your Cloud account. Please sign in again.');
+      } finally { if (alive && version === generation) setReady(true); }
+    };
+    const { data: subscription } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        generation++;
+        cloudRef.current = null;
+        setCloudUser(null);
+        localStorage.removeItem(ACTIVE_KEY);
+        setActiveId(null);
+        setState(initialState());
+        setReady(true);
+      } else if (event === 'SIGNED_IN' && session?.user.id !== cloudRef.current) {
+        void load(session?.user ?? null);
+      }
+    });
+    void supabase.auth.getUser().then(({ data }) => { if (alive && generation === 0) void load(data.user); });
+    return () => { alive = false; subscription.subscription.unsubscribe(); };
+  }, [saveCloud]);
+
+  useEffect(() => {
+    const id = cloudRef.current;
+    if (!ready || !id || activeId !== id || JSON.stringify(state) === lastSaved.current) return;
+    const timer = setTimeout(() => { void saveCloud(id, state).catch(() => {}); }, 400);
+    return () => clearTimeout(timer);
+  }, [state, ready, activeId, saveCloud]);
 
   // Persist active account state + keep its directory entry fresh
   useEffect(() => {
@@ -196,6 +292,13 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(
     (id: string) => {
+      const account = readAccounts().find(a => a.id === id);
+      if (account?.cloud) {
+        selectedLocal.current = null;
+        setAuthEmail(account.email ?? '');
+        setAuthRequested(true);
+        return;
+      }
       const loaded = readState(id) ?? initialState();
       setState(loaded);
       setActiveId(id);
@@ -212,16 +315,20 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
   );
 
   const newAccount = useCallback(() => {
-    const id = uid();
-    const fresh = { ...initialState(), id };
-    localStorage.setItem(stateKey(id), JSON.stringify(fresh));
-    setState(fresh);
-    setActiveId(id);
-    localStorage.setItem(ACTIVE_KEY, id);
-    rememberAccount({ id, name: "", email: "", avatar: "", lastUsedAt: new Date().toISOString() });
-  }, [rememberAccount]);
+    selectedLocal.current = cloudRef.current ? null : activeRef.current;
+    setAuthEmail(currentState.current.email ?? '');
+    setAuthRequested(true);
+  }, []);
 
   const logout = useCallback(() => {
+    if (cloudRef.current) {
+      const id = cloudRef.current;
+      void saveCloud(id, currentState.current).then(async () => {
+        const { error } = await supabase.auth.signOut();
+        if (error) toast.error('Could not log out. Please try again.');
+      }).catch(() => {});
+      return;
+    }
     const id = activeRef.current;
     if (id) {
       rememberAccount({ id, name: state.name || "Saver", email: state.email ?? "", avatar: state.avatar ?? "", lastUsedAt: new Date().toISOString() });
@@ -229,7 +336,7 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(ACTIVE_KEY);
     setActiveId(null);
     setState(initialState());
-  }, [rememberAccount, state.name, state.email, state.avatar]);
+  }, [rememberAccount, state.name, state.email, state.avatar, saveCloud]);
 
   /** Forget an account on this device only — its saved data stays untouched unless it is the removed profile. */
   const removeAccount = useCallback((id: string) => {
@@ -261,6 +368,11 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
   const value = useMemo(
     () => ({
       state,
+      cloudUser,
+      authRequested,
+      authEmail,
+      cancelAuth: () => setAuthRequested(false),
+      syncStatus,
       ready,
       accounts,
       activeId,
@@ -280,7 +392,7 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
       newAccount,
       removeAccount,
     }),
-    [state, ready, accounts, activeId, update, addExpense, removeExpense, addGoal, updateGoal, removeGoal, contributeToGoal, addXp, completeLesson, reset, toggleTheme, logout, login, newAccount, removeAccount],
+    [state, cloudUser, authRequested, authEmail, syncStatus, ready, accounts, activeId, update, addExpense, removeExpense, addGoal, updateGoal, removeGoal, contributeToGoal, addXp, completeLesson, reset, toggleTheme, logout, login, newAccount, removeAccount],
   );
 
   return <SmartSaveContext.Provider value={value}>{children}</SmartSaveContext.Provider>;

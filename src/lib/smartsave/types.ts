@@ -91,6 +91,7 @@ export interface SmartSaveState {
 export interface SavedAccount {
   id: string;
   name: string;
+  cloud?: boolean;
   email?: string;
   avatar?: string;
   lastUsedAt?: string;
