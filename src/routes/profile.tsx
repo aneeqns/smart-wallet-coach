@@ -20,7 +20,7 @@ export const Route = createFileRoute("/profile")({
 });
 
 function ProfilePage() {
-  const { state, reset, logout } = useSmartSave();
+  const { state, reset, logout, cloudUser, newAccount, syncStatus } = useSmartSave();
   const stats = useMemo(() => computeStats(state), [state]);
   const score = computeScore(state, stats);
   const lvl = levelFor(state.xp);
@@ -30,6 +30,10 @@ function ProfilePage() {
   return (
     <div className="space-y-6">
       <PageHeader emoji="👤" title="Profile" subtitle="Your progress in the SmartSave simulation." />
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+        <span className="text-sm text-muted-foreground">{cloudUser ? syncStatus : 'Saved on this device only'}</span>
+        {!cloudUser && <Button onClick={newAccount}>Save this profile to Cloud</Button>}
+      </div>
 
       <SectionCard className="bg-hero-gradient text-primary-foreground border-transparent">
         <div className="flex flex-wrap items-center gap-4">

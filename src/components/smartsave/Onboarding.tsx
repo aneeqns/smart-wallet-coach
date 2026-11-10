@@ -16,10 +16,10 @@ const DURATIONS = [7, 14, 30, 60, 90];
 const CONFIDENCE = ["Just starting", "A little unsure", "Okay-ish", "Fairly confident", "Very confident"];
 
 export function Onboarding() {
-  const { update } = useSmartSave();
+  const { update, state, cloudUser } = useSmartSave();
   const [step, setStep] = useState(0);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [name, setName] = useState(state.name);
+  const [email, setEmail] = useState(state.email ?? '');
   const [goalIdx, setGoalIdx] = useState(1);
   const [customGoalName, setCustomGoalName] = useState("");
   const [goalTarget, setGoalTarget] = useState(800);
@@ -126,6 +126,7 @@ export function Onboarding() {
                 <Input
                   id="email"
                   type="email"
+                  disabled={Boolean(cloudUser)}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"

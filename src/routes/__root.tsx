@@ -16,6 +16,7 @@ import { SmartSaveProvider, useSmartSave } from "@/lib/smartsave/store";
 import { AppShell } from "@/components/smartsave/AppShell";
 import { Onboarding } from "@/components/smartsave/Onboarding";
 import { Welcome } from "@/components/smartsave/Welcome";
+import { CloudSignIn } from '@/components/smartsave/CloudSignIn';
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -113,11 +114,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function SmartSaveGate() {
-  const { state, ready, activeId } = useSmartSave();
+  const { state, ready, activeId, authRequested } = useSmartSave();
 
   if (!ready) {
     return <div className="min-h-screen bg-background" />;
   }
+
+  if (authRequested) return <CloudSignIn />;
 
   if (!activeId) {
     return <Welcome />;

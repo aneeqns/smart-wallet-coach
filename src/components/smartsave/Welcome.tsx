@@ -57,7 +57,7 @@ export function Welcome() {
                         )}
                       </span>
                       <span className="block truncate text-xs text-muted-foreground">
-                        {a.email || "Virtual demo account"}
+                        {a.email || "Virtual demo account"}{!a.cloud && " · This device only"}
                       </span>
                     </span>
                   </button>
@@ -89,8 +89,7 @@ export function Welcome() {
         </Button>
 
         <p className="mt-6 text-center text-[11px] text-muted-foreground">
-          Removing an account only forgets it on this browser. Virtual money only — SmartSave is an educational
-          simulation.
+          Removing an account only forgets it on this browser. Virtual money only — SmartSave is an educational simulation.
         </p>
       </div>
     </div>
