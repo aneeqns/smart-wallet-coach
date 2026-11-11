@@ -35,6 +35,32 @@ export type Database = {
         }
         Relationships: []
       }
+      smartsave_account_directories: {
+        Row: {
+          accounts: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accounts?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accounts?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smartsave_account_directories_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       smartsave_states: {
         Row: {
           state: Json
