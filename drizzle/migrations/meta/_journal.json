@@ -8,6 +8,13 @@
       "when": 1794284184289,
       "tag": "0000_smartsave_cloud_accounts",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794378451455,
+      "tag": "0001_sync_remembered_cloud_accounts",
+      "breakpoints": true
     }
   ]
 }

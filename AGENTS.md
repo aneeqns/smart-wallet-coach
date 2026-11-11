@@ -11,3 +11,4 @@
 
 - Use Cloud Auth identities and owner-scoped Cloud rows for synced simulation state; retain local profiles as explicit import sources to avoid data loss.
 - Serialize Cloud writes and flush before logout; load Cloud state before enabling writes to prevent fresh defaults overwriting saved progress.
+- Sync an owner-scoped display-only account directory after authenticated login; keep browser removal tombstones local so forgetting an entry never deletes a Cloud account.
