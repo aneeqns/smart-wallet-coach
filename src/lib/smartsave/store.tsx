@@ -14,11 +14,12 @@ import { supabase } from '@/integrations/supabase/client';
 import type { User } from '@supabase/supabase-js';
 import type { Json } from '@/integrations/supabase/types';
 import { toast } from 'sonner';
-import { remember, chooseCloudState } from './accounts';
+import { remember, chooseCloudState, cloudDirectory, mergeDirectory } from './accounts';
 
 const LEGACY_KEY = "smartsave.state.v1";
 const ACCOUNTS_KEY = "smartsave.accounts.v1";
 const ACTIVE_KEY = "smartsave.activeAccount.v1";
+const HIDDEN_KEY = 'smartsave.hiddenAccounts.v1';
 const stateKey = (id: string) => `smartsave.state.v1:${id}`;
 
 interface Ctx {
@@ -103,6 +104,14 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
       const { error: profileError } = await supabase.from('profiles').update({ display_name: snapshot.name, avatar: snapshot.avatar ?? '', preferences: { theme: snapshot.theme, learnInterests: snapshot.learnInterests } }).eq('id', id);
       if (profileError) throw profileError;
+      // Retain Cloud-known entries even when this browser explicitly forgets one.
+      const { data: directory, error: readError } = await supabase.from('smartsave_account_directories').select('accounts').eq('user_id', id).maybeSingle();
+      if (readError) throw readError;
+      const remote = Array.isArray(directory?.accounts) ? directory.accounts as unknown as SavedAccount[] : [];
+      const own = { id, name: snapshot.name, email: snapshot.email ?? '', avatar: snapshot.avatar ?? '', cloud: true, lastUsedAt: new Date().toISOString() };
+      const metadata = cloudDirectory(remember(mergeDirectory(readAccounts(), remote), own));
+      const { error: directoryError } = await supabase.from('smartsave_account_directories').upsert({ user_id: id, accounts: metadata as unknown as Json, updated_at: new Date().toISOString() });
+      if (directoryError) throw directoryError;
       lastSaved.current = JSON.stringify(snapshot);
       setSyncStatus('Saved to Cloud');
     });
@@ -137,14 +146,13 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
     setAccounts(list);
 
     const active = localStorage.getItem(ACTIVE_KEY);
-    if (active && list.some((a) => a.id === active)) {
+    if (active && list.some((a) => a.id === active && !a.cloud)) {
       const loaded = readState(active);
       if (loaded) {
         setState(loaded);
         setActiveId(active);
       }
     }
-    setReady(true);
   }, []);
 
   useEffect(() => {
@@ -154,21 +162,27 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
       const version = ++generation;
       cloudRef.current = null;
       setCloudUser(user);
-      if (!user) return;
+      if (!user) { if (alive) setReady(true); return; }
       setReady(false);
       try {
-        const [{ data, error }, { data: profile, error: profileError }] = await Promise.all([
+        const [{ data, error }, { data: profile, error: profileError }, { data: directory, error: directoryError }] = await Promise.all([
           supabase.from('smartsave_states').select('state').eq('user_id', user.id).maybeSingle(),
           supabase.from('profiles').select('*').eq('id', user.id).single(),
+          supabase.from('smartsave_account_directories').select('accounts').eq('user_id', user.id).maybeSingle(),
         ]);
-        if (error || profileError) throw error ?? profileError;
+        if (error || profileError || directoryError) throw error ?? profileError ?? directoryError;
         if (!alive || version !== generation) return;
         const source = selectedLocal.current ? readState(selectedLocal.current) : null;
         const loaded = chooseCloudState(data ? hydrate(data.state as unknown as SmartSaveState) : null, source, { ...initialState(), name: profile?.display_name ?? '', avatar: profile?.avatar ?? '' });
         const snapshot = { ...loaded, id: user.id, email: user.email ?? '' };
         if (!data) await saveCloud(user.id, snapshot);
         if (!alive || version !== generation) return;
-        const list = remember(readAccounts(), { id: user.id, name: snapshot.name, email: snapshot.email, avatar: snapshot.avatar, cloud: true, lastUsedAt: new Date().toISOString() });
+        let hidden: string[] = [];
+        try { hidden = JSON.parse(localStorage.getItem(HIDDEN_KEY) ?? '[]'); } catch { /* ignore corrupt metadata */ }
+        hidden = Array.isArray(hidden) ? hidden.filter(id => id !== user.id) : [];
+        localStorage.setItem(HIDDEN_KEY, JSON.stringify(hidden));
+        const remote = Array.isArray(directory?.accounts) ? directory.accounts as unknown as SavedAccount[] : [];
+        const list = remember(mergeDirectory(readAccounts(), cloudDirectory(remote), hidden), { id: user.id, name: snapshot.name, email: snapshot.email, avatar: snapshot.avatar, cloud: true, lastUsedAt: new Date().toISOString() });
         localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(list));
         localStorage.setItem(ACTIVE_KEY, user.id);
         localStorage.setItem(stateKey(user.id), JSON.stringify(snapshot));
@@ -180,6 +194,8 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
         selectedLocal.current = null;
         setAuthRequested(false);
         setSyncStatus('Saved to Cloud');
+        // Sync the merged directory, including this login, even if progress is unchanged.
+        void saveCloud(user.id, snapshot).catch(() => {});
       } catch {
         setActiveId(null);
         setSyncStatus('Cloud could not load');
@@ -196,7 +212,8 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
         setState(initialState());
         setReady(true);
       } else if (event === 'SIGNED_IN' && session?.user.id !== cloudRef.current) {
-        void load(session?.user ?? null);
+        // Do not await another auth request inside the auth client's callback lock.
+        setTimeout(() => { if (alive) void load(session?.user ?? null); }, 0);
       }
     });
     void supabase.auth.getUser().then(({ data }) => { if (alive && generation === 0) void load(data.user); });
@@ -229,7 +246,7 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
   }, [state, ready, activeId]);
 
   const update = useCallback((patch: Partial<SmartSaveState>) => {
-    setState((s) => ({ ...s, ...patch }));
+    setState((s) => ({ ...s, ...patch, ...(cloudRef.current ? { email: s.email } : {}) }));
   }, []);
 
   const addXp = useCallback((amount: number, badge?: string) => {
@@ -323,10 +340,11 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     if (cloudRef.current) {
       const id = cloudRef.current;
+      setReady(false);
       void saveCloud(id, currentState.current).then(async () => {
         const { error } = await supabase.auth.signOut();
-        if (error) toast.error('Could not log out. Please try again.');
-      }).catch(() => {});
+        if (error) { setReady(true); toast.error('Could not log out. Please try again.'); }
+      }).catch(() => setReady(true));
       return;
     }
     const id = activeRef.current;
@@ -340,6 +358,9 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
 
   /** Forget an account on this device only — its saved data stays untouched unless it is the removed profile. */
   const removeAccount = useCallback((id: string) => {
+    let hidden: string[] = [];
+    try { hidden = JSON.parse(localStorage.getItem(HIDDEN_KEY) ?? '[]'); } catch { /* ignore corrupt metadata */ }
+    localStorage.setItem(HIDDEN_KEY, JSON.stringify([...new Set([...(Array.isArray(hidden) ? hidden : []), id])]));
     setAccounts((list) => {
       const next = list.filter((a) => a.id !== id);
       localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(next));

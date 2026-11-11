@@ -1,8 +1,22 @@
 import { describe, expect, test } from 'vitest';
-import { remember, chooseCloudState } from './accounts';
+import { remember, chooseCloudState, cloudDirectory, mergeDirectory } from './accounts';
 import { initialState } from './data';
 
 describe('remembered accounts', () => {
+  test('a new device restores B first and A second without duplicates', () => {
+    const directory = [{ id: 'B', name: 'B', cloud: true, lastUsedAt: '2026-11-11' }, { id: 'A', name: 'A', cloud: true, lastUsedAt: '2026-11-10' }];
+    expect(mergeDirectory([], directory).map(a => a.id)).toEqual(['B', 'A']);
+    expect(mergeDirectory(directory, directory).length).toBe(2);
+  });
+  test('device removal remains local and is not restored by Cloud', () => {
+    const remote = [{ id: 'A', name: 'A', cloud: true }, { id: 'B', name: 'B', cloud: true }];
+    expect(mergeDirectory([], remote, ['A']).map(a => a.id)).toEqual(['B']);
+    expect(remote.length).toBe(2);
+  });
+  test('only Cloud display fields are saved to the directory', () => {
+    const account = { id: 'A', name: 'A', cloud: true, password: 'must-not-copy', token: 'must-not-copy' };
+    expect(cloudDirectory([account, { id: 'local', name: 'Local' }])).toEqual([{ id: 'A', name: 'A', email: '', avatar: '', cloud: true, lastUsedAt: undefined }]);
+  });
   test('Account B does not replace Account A', () => {
     expect(remember([{ id: 'A', name: 'Account A' }], { id: 'B', name: 'Account B' }).map(a => a.id)).toEqual(['B', 'A']);
   });
