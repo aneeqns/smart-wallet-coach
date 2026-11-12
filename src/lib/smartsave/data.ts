@@ -17,7 +17,7 @@ export const CATEGORIES: {
   { id: "other", label: "Other", emoji: "🎁", color: "var(--chart-5)", defaultNecessity: "want" },
 ];
 
-export const categoryOf = (id: CategoryId) => CATEGORIES.find((c) => c.id === id) ?? CATEGORIES[7]!;
+export const categoryOf = (id: CategoryId) => CATEGORIES.find((c) => c.id === id) ?? CATEGORIES[7] ?? CATEGORIES[0];
 
 export const GOAL_PRESETS = [
   { emoji: "🎓", name: "Education", target: 1000 },
@@ -43,6 +43,8 @@ export const LEARN_INTERESTS = [
   "Emergency funds",
   "Avoiding impulse spending",
   "Goal planning",
+  "Shariah money principles",
+  "Zakat and sadaqah",
 ];
 
 export interface Challenge {
@@ -101,11 +103,12 @@ export const LESSONS: Lesson[] = [
     emoji: "⚖️",
     title: "Needs vs Wants",
     minutes: 3,
-    intro: "Needs keep your life running. Wants make it more fun. Both are okay — the balance matters.",
+    intro: "Needs keep your life running. Wants add enjoyment. Choose permissible purchases in both categories and avoid waste (israf).",
     points: [
       "Needs: food, transport to school/work, bills, essential study material.",
       "Wants: games, extra snacks, upgrades, impulse buys.",
       "Ask: what happens if I skip this for a week?",
+      "Need or Want describes priority, not religious permissibility. Avoid prohibited purchases in either category.",
     ],
     quiz: [
       { q: "Bus fare to school is usually a…", options: ["Need", "Want"], answer: 0, why: "It's required for something essential in your routine." },
@@ -132,7 +135,7 @@ export const LESSONS: Lesson[] = [
     minutes: 3,
     intro: "Money you keep aside only for surprises — repairs, health, sudden costs.",
     points: ["Keep it separate from goal savings.", "Start small: even $100 helps.", "Refill it after you use it."],
-    quiz: [{ q: "A concert ticket sale is an emergency?", options: ["Yes", "No"], answer: 1, why: "Emergencies are unexpected and necessary, not exciting opportunities." }],
+    quiz: [{ q: "A sale on a bicycle accessory is an emergency?", options: ["Yes", "No"], answer: 1, why: "Emergencies are unexpected and necessary, not exciting opportunities." }],
     xp: 60,
   },
   {
