@@ -15,6 +15,8 @@ export const Route = createFileRoute("/learn")({
       { name: "description", content: "Short interactive money lessons with quizzes: budgets, needs vs wants, emergency funds and saving habits." },
       { property: "og:title", content: "Learn Money Basics — SmartSave" },
       { property: "og:description", content: "Bite-sized financial lessons with quizzes, XP and progress tracking." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: LearnPage,

@@ -25,6 +25,8 @@ export const Route = createFileRoute("/coach")({
         property: "og:description",
         content: "AI coaching that turns your virtual spending data into a weekly savings plan.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: CoachPage,

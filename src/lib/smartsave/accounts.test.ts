@@ -15,7 +15,7 @@ describe('remembered accounts', () => {
   });
   test('only Cloud display fields are saved to the directory', () => {
     const account = { id: 'A', name: 'A', cloud: true, password: 'must-not-copy', token: 'must-not-copy' };
-    expect(cloudDirectory([account, { id: 'local', name: 'Local' }])).toEqual([{ id: 'A', name: 'A', email: '', avatar: '', cloud: true, lastUsedAt: undefined }]);
+    expect(cloudDirectory([account, { id: 'local', name: 'Local' }])).toEqual([{ id: 'A', name: 'A', email: '', avatar: '', cloud: true, lastUsedAt: '' }]);
   });
   test('Account B does not replace Account A', () => {
     expect(remember([{ id: 'A', name: 'Account A' }], { id: 'B', name: 'Account B' }).map(a => a.id)).toEqual(['B', 'A']);

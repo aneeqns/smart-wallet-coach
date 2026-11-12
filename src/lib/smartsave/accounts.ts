@@ -10,7 +10,7 @@ export function chooseCloudState(cloud: SmartSaveState | null, selectedLocal: Sm
 
 /** Only display metadata may cross devices; never copy sessions or simulation rows. */
 export function cloudDirectory(list: SavedAccount[]): SavedAccount[] {
-  return list.filter(a => a.cloud).map(a => ({ id: a.id, name: a.name, email: a.email ?? '', avatar: a.avatar ?? '', cloud: true, lastUsedAt: a.lastUsedAt }));
+  return list.filter(a => a?.cloud && typeof a.id === 'string').map(a => ({ id: a.id, name: a.name ?? '', email: a.email ?? '', avatar: a.avatar ?? '', cloud: true, lastUsedAt: a.lastUsedAt ?? '' }));
 }
 
 export function mergeDirectory(local: SavedAccount[], remote: SavedAccount[], hidden: string[] = []): SavedAccount[] {

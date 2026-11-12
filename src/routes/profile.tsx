@@ -14,6 +14,8 @@ export const Route = createFileRoute("/profile")({
       { name: "description", content: "Your SmartSave profile: level, XP, achievements, streak, savings goals and learning progress." },
       { property: "og:title", content: "Your Profile — SmartSave" },
       { property: "og:description", content: "Review your level, badges, streak and learning progress in SmartSave." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ProfilePage,
