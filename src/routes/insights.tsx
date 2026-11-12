@@ -14,6 +14,8 @@ export const Route = createFileRoute("/insights")({
       { name: "description", content: "Automatic patterns in your virtual spending: category trends, needs vs wants balance and weekly comparisons." },
       { property: "og:title", content: "Spending Insights — SmartSave" },
       { property: "og:description", content: "See what your virtual spending patterns say about your money habits." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: InsightsPage,

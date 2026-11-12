@@ -16,6 +16,8 @@ export const Route = createFileRoute("/savebot")({
       { name: "description", content: "Ask SaveBot about your virtual spending and get educational, plain-language coaching on budgeting and saving." },
       { property: "og:title", content: "SaveBot Money Coach — SmartSave" },
       { property: "og:description", content: "An educational money coach that explains your spending patterns and helps you plan." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: SaveBotPage,

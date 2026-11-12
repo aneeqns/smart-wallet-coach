@@ -16,6 +16,8 @@ export const Route = createFileRoute("/budget")({
       { name: "description", content: "Divide your virtual balance between needs, wants, savings and an emergency fund with an instantly updating chart." },
       { property: "og:title", content: "Smart Budget Planner — SmartSave" },
       { property: "og:description", content: "Plan needs, wants, savings and emergency money — and see the breakdown update live." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: BudgetPage,

@@ -17,6 +17,8 @@ export const Route = createFileRoute("/goals")({
       { name: "description", content: "Create multiple virtual savings goals, set targets and dates, and allocate demo money toward each one." },
       { property: "og:title", content: "Savings Goals — SmartSave" },
       { property: "og:description", content: "Set targets, track progress bars and learn how consistent saving reaches a goal faster." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: GoalsPage,

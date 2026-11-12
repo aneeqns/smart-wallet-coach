@@ -13,6 +13,8 @@ export const Route = createFileRoute("/challenges")({
       { name: "description", content: "Weekly and monthly money challenges that build saving habits, with XP, badges and streaks." },
       { property: "og:title", content: "Financial Challenges — SmartSave" },
       { property: "og:description", content: "Complete habit-building money challenges and earn XP, badges and levels." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ChallengesPage,

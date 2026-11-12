@@ -19,6 +19,8 @@ export const Route = createFileRoute("/expenses")({
       { name: "description", content: "Log virtual expenses, tag each one as a Need or a Want, and see where your demo money goes." },
       { property: "og:title", content: "Expense Manager — SmartSave" },
       { property: "og:description", content: "Track virtual spending by category and learn the difference between needs and wants." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ExpensesPage,

@@ -23,6 +23,8 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "Manage a virtual wallet, set savings goals and learn better money habits with SmartSave.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Dashboard,

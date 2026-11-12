@@ -182,7 +182,7 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
         hidden = Array.isArray(hidden) ? hidden.filter(id => id !== user.id) : [];
         localStorage.setItem(HIDDEN_KEY, JSON.stringify(hidden));
         const remote = Array.isArray(directory?.accounts) ? directory.accounts as unknown as SavedAccount[] : [];
-        const list = remember(mergeDirectory(readAccounts(), cloudDirectory(remote), hidden), { id: user.id, name: snapshot.name, email: snapshot.email, avatar: snapshot.avatar, cloud: true, lastUsedAt: new Date().toISOString() });
+        const list = remember(mergeDirectory(readAccounts(), cloudDirectory(remote), hidden), { id: user.id, name: snapshot.name, email: snapshot.email, avatar: snapshot.avatar ?? '', cloud: true, lastUsedAt: new Date().toISOString() });
         localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(list));
         localStorage.setItem(ACTIVE_KEY, user.id);
         localStorage.setItem(stateKey(user.id), JSON.stringify(snapshot));
@@ -216,7 +216,7 @@ export function SmartSaveProvider({ children }: { children: ReactNode }) {
         setTimeout(() => { if (alive) void load(session?.user ?? null); }, 0);
       }
     });
-    void supabase.auth.getUser().then(({ data }) => { if (alive && generation === 0) void load(data.user); });
+    void supabase.auth.getUser().then(({ data }) => { if (alive && generation === 0) void load(data.user); }).catch(() => { if (alive && generation === 0) setReady(true); });
     return () => { alive = false; subscription.subscription.unsubscribe(); };
   }, [saveCloud]);
 
