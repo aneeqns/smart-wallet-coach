@@ -98,7 +98,7 @@ function CoachPage() {
       <PageHeader
         emoji="🌱"
         title="Savings Coach"
-        subtitle="AI coaching built from your virtual spending, goals and habits — educational only."
+        subtitle="Shariah-conscious guidance for your virtual spending and savings — educational, not a religious ruling."
       />
 
       <div className="grid gap-4 sm:grid-cols-4">

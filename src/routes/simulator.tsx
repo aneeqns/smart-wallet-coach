@@ -66,9 +66,9 @@ function SimulatorPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        emoji="🔮"
+        emoji="📊"
         title="“What If?” Simulator"
-        subtitle="Experiment with your habits using virtual money and watch your goal date move — no real risk."
+        subtitle="Contribution-only savings forecasts — no interest, investment returns or real money."
       />
 
       {!goal ? (
@@ -136,7 +136,7 @@ function SimulatorPage() {
                 onChange={setOneOff}
                 max={500}
                 step={10}
-                hint={`A ${money(oneOff)} bonus dropped straight into ${goal.name}`}
+                hint={`A ${money(oneOff)} gift or lawful work bonus added to ${goal.name}`}
               />
 
               <div className="mt-5 flex gap-2">

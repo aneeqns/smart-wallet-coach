@@ -17,7 +17,7 @@ export const CATEGORIES: {
   { id: "other", label: "Other", emoji: "🎁", color: "var(--chart-5)", defaultNecessity: "want" },
 ];
 
-export const categoryOf = (id: CategoryId) => CATEGORIES.find((c) => c.id === id) ?? CATEGORIES[7]!;
+export const categoryOf = (id: CategoryId) => CATEGORIES.find((c) => c.id === id) ?? { id: "other" as const, label: "Other", emoji: "🎁", color: "var(--chart-5)", defaultNecessity: "want" as const };
 
 export const GOAL_PRESETS = [
   { emoji: "🎓", name: "Education", target: 1000 },
@@ -43,6 +43,8 @@ export const LEARN_INTERESTS = [
   "Emergency funds",
   "Avoiding impulse spending",
   "Goal planning",
+  "Shariah money principles",
+  "Zakat and sadaqah",
 ];
 
 export interface Challenge {
@@ -78,6 +80,34 @@ export interface Lesson {
 
 export const LESSONS: Lesson[] = [
   {
+    id: "shariah-basics", level: "Beginner", emoji: "🌿", title: "Shariah money principles", minutes: 3,
+    intro: "Build good money habits through lawful income, permissible spending, fairness and moderation.",
+    points: [
+      "Avoid riba (interest) and maysir (gambling). Saving here grows only through contributions, not interest.",
+      "Avoid waste (israf), deception and prohibited purchases. Needs vs Wants is a budgeting label, not a halal ruling.",
+      "XP and badges reward learning without payment, wagering or cash prizes. Surprise events are practice scenarios, not betting.",
+      "SmartSave is educational and is not scholar-certified. Ask a qualified scholar about specific contracts and disputed questions.",
+    ],
+    quiz: [
+      { q: "Which way of reaching a goal fits these principles?", options: ["Save from lawful income", "Earn interest", "Buy lottery tickets"], answer: 0, why: "Consistent saving from lawful income avoids interest and gambling." },
+      { q: "Does marking a purchase as a Need prove it is halal?", options: ["Yes", "No"], answer: 1, why: "Priority and religious permissibility are separate questions." },
+    ], xp: 60,
+  },
+  {
+    id: "zakat-sadaqah", level: "Intermediate", emoji: "🤲", title: "Zakat and sadaqah", minutes: 3,
+    intro: "Plan generosity responsibly while distinguishing obligatory zakat from voluntary sadaqah.",
+    points: [
+      "Zakat has eligibility rules involving qualifying assets, liabilities, nisab and the applicable lunar holding period.",
+      "A common rate for qualifying monetary wealth is 2.5%, but it is not a universal rule for every asset or every balance.",
+      "Sadaqah is voluntary. Plan affordable giving without neglecting essential responsibilities.",
+      "Virtual balances are not a zakat assessment. Consult a qualified scholar for your actual circumstances and eligible recipients.",
+    ],
+    quiz: [
+      { q: "Is sadaqah the same as obligatory zakat?", options: ["Yes", "No"], answer: 1, why: "Sadaqah is voluntary, while zakat is obligatory when its conditions are met." },
+      { q: "Can your virtual SmartSave balance determine real zakat due?", options: ["Yes, always take 2.5%", "No, real assets and eligibility must be assessed"], answer: 1, why: "Virtual money does not establish qualifying assets, nisab or a lunar holding period." },
+    ], xp: 80,
+  },
+  {
     id: "budget",
     level: "Beginner",
     emoji: "🧾",
@@ -101,11 +131,12 @@ export const LESSONS: Lesson[] = [
     emoji: "⚖️",
     title: "Needs vs Wants",
     minutes: 3,
-    intro: "Needs keep your life running. Wants make it more fun. Both are okay — the balance matters.",
+    intro: "Needs keep your life running. Wants add enjoyment. Choose permissible purchases in both categories and avoid waste (israf).",
     points: [
       "Needs: food, transport to school/work, bills, essential study material.",
       "Wants: games, extra snacks, upgrades, impulse buys.",
       "Ask: what happens if I skip this for a week?",
+      "Need or Want describes priority, not religious permissibility. Avoid prohibited purchases in either category.",
     ],
     quiz: [
       { q: "Bus fare to school is usually a…", options: ["Need", "Want"], answer: 0, why: "It's required for something essential in your routine." },
@@ -132,7 +163,7 @@ export const LESSONS: Lesson[] = [
     minutes: 3,
     intro: "Money you keep aside only for surprises — repairs, health, sudden costs.",
     points: ["Keep it separate from goal savings.", "Start small: even $100 helps.", "Refill it after you use it."],
-    quiz: [{ q: "A concert ticket sale is an emergency?", options: ["Yes", "No"], answer: 1, why: "Emergencies are unexpected and necessary, not exciting opportunities." }],
+    quiz: [{ q: "A sale on a bicycle accessory is an emergency?", options: ["Yes", "No"], answer: 1, why: "Emergencies are unexpected and necessary, not exciting opportunities." }],
     xp: 60,
   },
   {
@@ -219,15 +250,15 @@ export const LIFE_EVENTS: LifeEvent[] = [
   {
     id: "bonus",
     emoji: "🎁",
-    title: "You received a $100 bonus",
-    detail: "Unexpected money just landed in your virtual wallet.",
+    title: "You earned a $100 work bonus",
+    detail: "An extra payment for lawful work landed in your virtual wallet — not interest or a prize draw.",
     kind: "bonus",
     amount: 100,
     options: [
       { id: "save", label: "Save all of it", lesson: "Windfalls are the easiest money to save — you never budgeted for it." },
       { id: "goal", label: "Add it to a goal", lesson: "Nice acceleration: unexpected money can shave weeks off a goal." },
       { id: "emergency", label: "Put it in emergency savings", lesson: "A stronger buffer means future surprises won't hurt your goals." },
-      { id: "spend", label: "Spend it", lesson: "Enjoying money is allowed — a common approach is splitting it, e.g. save most and spend a small part." },
+      { id: "spend", label: "Spend on a permissible treat", lesson: "Plan permissible enjoyment in moderation — save most and spend a small part without waste." },
     ],
   },
   {
@@ -247,11 +278,11 @@ export const LIFE_EVENTS: LifeEvent[] = [
     id: "friends",
     emoji: "🍕",
     title: "Friends invite you out",
-    detail: "A night out would cost about $40.",
+    detail: "A meal at a halal restaurant would cost about $40.",
     kind: "expense",
     amount: 40,
     options: [
-      { id: "wants", label: "Go, pay from Wants", lesson: "Budgeted fun is healthy — you planned for it, so no guilt." },
+      { id: "wants", label: "Go, pay from Wants", lesson: "Permissible enjoyment can fit a budget — keep it moderate and protect essential responsibilities." },
       { id: "half", label: "Go, but spend only $20", lesson: "Setting a spending cap before you go is one of the most practical money skills." },
       { id: "skip", label: "Skip it and save the $40", lesson: "Saying no sometimes protects your goal — just don't skip everything, or the plan won't last." },
     ],
@@ -288,7 +319,7 @@ export function sampleExpenses(scale = 1): Expense[] {
     [7, "food", 4, "Coffee run", "want"],
     [15, "transport", 5, "Ride share", "need"],
     [60, "bills", 6, "Phone bill", "need"],
-    [28, "entertainment", 7, "Cinema with friends", "want"],
+    [28, "entertainment", 7, "Sports outing with friends", "want"],
     [22, "technology", 9, "USB drive", "want"],
     [19, "food", 10, "Dinner out", "want"],
   ];

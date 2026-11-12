@@ -103,7 +103,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">{children}</main>
         <footer className="px-6 pb-8 text-center text-xs text-muted-foreground">
           SmartSave is an educational simulation. All balances, expenses and savings are virtual demo money — no real
-          accounts, payments or financial advice.
+          accounts, payments or financial advice. Guided by Islamic finance principles: no interest or gambling.
+          Not a Shariah certification or religious ruling; consult a qualified scholar for specific questions.
         </footer>
       </div>
     </div>
@@ -116,7 +117,7 @@ function Brand() {
       <img src={logoAsset.url} alt="SmartSave logo" className="size-10 rounded-2xl object-contain" />
       <span>
         <span className="block font-display text-lg font-extrabold leading-none">SmartSave</span>
-        <span className="block text-[11px] text-muted-foreground">Learn money by doing</span>
+        <span className="block text-[11px] text-muted-foreground">Save with Islamic principles</span>
       </span>
     </Link>
   );

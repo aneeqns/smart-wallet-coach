@@ -1,5 +1,6 @@
 import { streamText } from "ai";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
+import { SHARIAH_COACH_RULES, shariahReply } from "./shariah";
 
 export interface CoachSnapshot {
   name: string;
@@ -26,13 +27,15 @@ Rules:
 - Never invent data that is not in the snapshot.`;
 
 export async function generateCoachAdvice(data: CoachSnapshot): Promise<string> {
+  const educationalReply = shariahReply(data.question);
+  if (educationalReply) return educationalReply;
   const key = process.env["LOVABLE_API_KEY"];
   if (!key) throw new Error("Missing LOVABLE_API_KEY");
 
   const gateway = createLovableAiGatewayProvider(key);
   const result = streamText({
     model: gateway("google/gemini-3.6-flash"),
-    system: SYSTEM,
+    system: `${SYSTEM}\n${SHARIAH_COACH_RULES}`,
     prompt: `User: ${data.name || "Saver"}
 Question: ${data.question || "Give me a personalised savings plan for this week."}
 

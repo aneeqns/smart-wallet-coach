@@ -8,6 +8,7 @@ import { SectionCard } from "@/components/smartsave/ui-bits";
 import type { SmartSaveState } from "@/lib/smartsave/types";
 import type { Stats } from "@/lib/smartsave/selectors";
 import savebotAsset from "@/assets/savebot.png.asset.json";
+import { shariahReply } from "@/lib/smartsave/shariah";
 
 export const Route = createFileRoute("/savebot")({
   head: () => ({
@@ -29,9 +30,13 @@ const SUGGESTIONS = [
   "Where is my money going?",
   "How do I start an emergency fund?",
   "Am I spending too much on wants?",
+  "What are riba and maysir?",
+  "How are zakat and sadaqah different?",
 ];
 
 function reply(question: string, s: SmartSaveState, st: Stats): string {
+  const educationalReply = shariahReply(question);
+  if (educationalReply) return educationalReply;
   const q = question.toLowerCase();
   const topCat = [...st.byCategory].sort((a, b) => b.value - a.value)[0];
   const goal = s.goals[0];
@@ -96,7 +101,7 @@ function SaveBotPage() {
         <div>
           <h1 className="font-display text-2xl font-extrabold">SaveBot</h1>
           <p className="text-sm text-muted-foreground">
-            An educational coach for budgeting and saving — no investment or financial product advice.
+            Shariah-conscious budgeting and saving — educational guidance, not fatwas or product certification.
           </p>
         </div>
       </div>
@@ -123,9 +128,9 @@ function SaveBotPage() {
 
         <div className="mt-5 flex flex-wrap gap-2">
           {SUGGESTIONS.map((s) => (
-            <button key={s} onClick={() => send(s)} className="rounded-full border border-border px-3 py-1.5 text-xs hover:bg-secondary">
+            <Button key={s} variant="outline" size="sm" onClick={() => send(s)} className="h-auto whitespace-normal text-left text-xs">
               {s}
-            </button>
+            </Button>
           ))}
         </div>
 
