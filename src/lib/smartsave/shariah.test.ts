@@ -13,6 +13,17 @@ describe("Shariah financial boundaries", () => {
   });
   test("zakat questions cannot become an ordinary balance-based suggestion", () => {
     expect(shariahTopic("How much zakat do I owe on my balance?")).toBe("zakat");
+    expect(shariahTopic("How do I give zakah?")).toBe("zakat");
+    expect(shariahTopic("When is zakah al-fitr due?")).toBe("zakat");
+    expect(shariahTopic("زكاة")).toBe("zakat");
+  });
+  test("maysir is recognized as gambling", () => {
+    expect(shariahTopic("What is maysir?")).toBe("gambling");
+  });
+  test("religious duties do not receive generic financial advice", () => {
+    expect(shariahTopic("How should inheritance be divided?")).toBe("duties");
+    expect(shariahTopic("What are the rules for fasting?")).toBe("duties");
+    expect(shariahTopic("Is gharar allowed?")).toBe("permissibility");
   });
   test("specific product permissibility is separated from ordinary budgeting", () => {
     expect(shariahTopic("Is this investment halal?")).toBe("permissibility");
