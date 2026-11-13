@@ -14,6 +14,7 @@ const NAV = [
   { to: "/goals", emoji: "🎯", label: "Goals" },
   { to: "/budget", emoji: "📊", label: "Budget" },
   { to: "/learn", emoji: "🧠", label: "Learn" },
+  { to: "/shariah", emoji: "🤲", label: "Shariah & Giving" },
   { to: "/savebot", emoji: "🤖", label: "SaveBot" },
   { to: "/coach", emoji: "🌱", label: "Savings Coach" },
   { to: "/challenges", emoji: "🏆", label: "Challenges" },
@@ -55,7 +56,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-sidebar-border bg-sidebar p-4 lg:flex">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col overflow-y-auto border-r border-sidebar-border bg-sidebar p-4 lg:flex">
         <Brand />
         <div className="mt-6 flex-1">{nav}</div>
         <LevelCard level={lvl.level} title={lvl.title} into={lvl.into} next={lvl.next} />
@@ -64,7 +65,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-foreground/40" onClick={() => setOpen(false)} />
-          <aside className="absolute inset-y-0 left-0 flex w-72 flex-col bg-sidebar p-4">
+          <aside className="absolute inset-y-0 left-0 flex w-72 flex-col overflow-y-auto bg-sidebar p-4">
             <div className="flex items-center justify-between">
               <Brand />
               <Button variant="ghost" size="icon" onClick={() => setOpen(false)} aria-label="Close menu">
