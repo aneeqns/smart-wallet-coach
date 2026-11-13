@@ -8,3 +8,5 @@
 - [ ] Align learning content, life events and savings presentation with Islamic finance principles.
 - [ ] Apply shared Shariah safeguards to SaveBot and Savings Coach.
 - [ ] Test interest-free forecasts and coaching safeguards; verify lessons and coaches in the browser.
+- [ ] Add an accessible Islamic money guide including zakah eligibility, recipients and virtual giving records.
+- [ ] Verify giving records persist and coaches recognize zakah terminology.
