@@ -19,6 +19,7 @@ import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as SavebotRouteImport } from './routes/savebot'
+import { Route as ShariahRouteImport } from './routes/shariah'
 import { Route as SimulatorRouteImport } from './routes/simulator'
 
 const IndexRoute = IndexRouteImport.update({
@@ -71,6 +72,11 @@ const SavebotRoute = SavebotRouteImport.update({
   path: '/savebot',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShariahRoute = ShariahRouteImport.update({
+  id: '/shariah',
+  path: '/shariah',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SimulatorRoute = SimulatorRouteImport.update({
   id: '/simulator',
   path: '/simulator',
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/learn': typeof LearnRoute
   '/profile': typeof ProfileRoute
   '/savebot': typeof SavebotRoute
+  '/shariah': typeof ShariahRoute
   '/simulator': typeof SimulatorRoute
 }
 export interface FileRoutesByTo {
@@ -101,6 +108,7 @@ export interface FileRoutesByTo {
   '/learn': typeof LearnRoute
   '/profile': typeof ProfileRoute
   '/savebot': typeof SavebotRoute
+  '/shariah': typeof ShariahRoute
   '/simulator': typeof SimulatorRoute
 }
 export interface FileRoutesById {
@@ -115,6 +123,7 @@ export interface FileRoutesById {
   '/learn': typeof LearnRoute
   '/profile': typeof ProfileRoute
   '/savebot': typeof SavebotRoute
+  '/shariah': typeof ShariahRoute
   '/simulator': typeof SimulatorRoute
 }
 export interface FileRouteTypes {
@@ -130,6 +139,7 @@ export interface FileRouteTypes {
     | '/learn'
     | '/profile'
     | '/savebot'
+    | '/shariah'
     | '/simulator'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -143,6 +153,7 @@ export interface FileRouteTypes {
     | '/learn'
     | '/profile'
     | '/savebot'
+    | '/shariah'
     | '/simulator'
   id:
     | '__root__'
@@ -156,6 +167,7 @@ export interface FileRouteTypes {
     | '/learn'
     | '/profile'
     | '/savebot'
+    | '/shariah'
     | '/simulator'
   fileRoutesById: FileRoutesById
 }
@@ -170,6 +182,7 @@ export interface RootRouteChildren {
   LearnRoute: typeof LearnRoute
   ProfileRoute: typeof ProfileRoute
   SavebotRoute: typeof SavebotRoute
+  ShariahRoute: typeof ShariahRoute
   SimulatorRoute: typeof SimulatorRoute
 }
 
@@ -245,6 +258,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SavebotRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shariah': {
+      id: '/shariah'
+      path: '/shariah'
+      fullPath: '/shariah'
+      preLoaderRoute: typeof ShariahRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/simulator': {
       id: '/simulator'
       path: '/simulator'
@@ -266,6 +286,7 @@ const rootRouteChildren: RootRouteChildren = {
   LearnRoute: LearnRoute,
   ProfileRoute: ProfileRoute,
   SavebotRoute: SavebotRoute,
+  ShariahRoute: ShariahRoute,
   SimulatorRoute: SimulatorRoute,
 }
 export const routeTree = rootRouteImport

@@ -13,3 +13,4 @@
 - Serialize Cloud writes and flush before logout; load Cloud state before enabling writes to prevent fresh defaults overwriting saved progress.
 - Sync an owner-scoped display-only account directory after authenticated login; keep browser removal tombstones local so forgetting an entry never deletes a Cloud account.
 - Keep educational finance boundaries in a shared browser-safe module used by both coaches; deterministic topic handling before general advice prevents conflicting answers, while the AI system prompt also constrains ordinary coaching.
+- Store virtual giving as ordinary simulation expenses through the shared validated giving helper; existing account persistence keeps records scoped to the selected profile without a second ledger or payment system.

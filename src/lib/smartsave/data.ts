@@ -85,6 +85,8 @@ export const LESSONS: Lesson[] = [
     points: [
       "Avoid riba (interest) and maysir (gambling). Saving here grows only through contributions, not interest.",
       "Avoid waste (israf), deception and prohibited purchases. Needs vs Wants is a budgeting label, not a halal ruling.",
+      "Avoid excessive contractual uncertainty (gharar), fraud and bribery. Honour clear agreements and other people’s rights.",
+      "Zakah is obligatory when its conditions are met; sadaqah is voluntary. Neither learning rewards nor virtual giving fulfill a real religious obligation.",
       "XP and badges reward learning without payment, wagering or cash prizes. Surprise events are practice scenarios, not betting.",
       "SmartSave is educational and is not scholar-certified. Ask a qualified scholar about specific contracts and disputed questions.",
     ],
@@ -99,12 +101,15 @@ export const LESSONS: Lesson[] = [
     points: [
       "Zakat has eligibility rules involving qualifying assets, liabilities, nisab and the applicable lunar holding period.",
       "A common rate for qualifying monetary wealth is 2.5%, but it is not a universal rule for every asset or every balance.",
+      "Give with the intention of zakah when due. Qur’an 9:60 identifies eight recipient categories: the poor, needy, zakah administrators, those whose hearts are reconciled, freeing people from bondage, eligible debtors, in the cause of Allah, and stranded travellers. Confirm how these apply with a qualified scholar.",
+      "Zakah al-fitr has separate household and Ramadan rules and is due before Eid al-Fitr prayer. Confirm the local food measure and whether a cash equivalent is accepted; it is not simply 2.5% of savings.",
       "Sadaqah is voluntary. Plan affordable giving without neglecting essential responsibilities.",
       "Virtual balances are not a zakat assessment. Consult a qualified scholar for your actual circumstances and eligible recipients.",
     ],
     quiz: [
       { q: "Is sadaqah the same as obligatory zakat?", options: ["Yes", "No"], answer: 1, why: "Sadaqah is voluntary, while zakat is obligatory when its conditions are met." },
       { q: "Can your virtual SmartSave balance determine real zakat due?", options: ["Yes, always take 2.5%", "No, real assets and eligibility must be assessed"], answer: 1, why: "Virtual money does not establish qualifying assets, nisab or a lunar holding period." },
+      { q: "When is zakah al-fitr due?", options: ["Before the Eid al-Fitr prayer", "Whenever a savings goal is reached"], answer: 0, why: "Zakah al-fitr is connected to Ramadan and is due before the Eid prayer; confirm local rules and amounts." },
     ], xp: 80,
   },
   {

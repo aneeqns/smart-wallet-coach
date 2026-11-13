@@ -32,6 +32,7 @@ const SUGGESTIONS = [
   "Am I spending too much on wants?",
   "What are riba and maysir?",
   "How are zakat and sadaqah different?",
+  "How do I give zakah?",
 ];
 
 function reply(question: string, s: SmartSaveState, st: Stats): string {
