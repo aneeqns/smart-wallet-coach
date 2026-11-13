@@ -5,8 +5,9 @@
 - [x] Sync the remembered Cloud-account directory after secure sign-in; retain device-only removals.
 
 # Shariah alignment
-- [ ] Align learning content, life events and savings presentation with Islamic finance principles.
-- [ ] Apply shared Shariah safeguards to SaveBot and Savings Coach.
-- [ ] Test interest-free forecasts and coaching safeguards; verify lessons and coaches in the browser.
-- [ ] Add an accessible Islamic money guide including zakah eligibility, recipients and virtual giving records.
-- [ ] Verify giving records persist and coaches recognize zakah terminology.
+- [x] Align learning content, life events and savings presentation with Islamic finance principles (educational, not scholarly certification).
+- [x] Apply shared Shariah safeguards to SaveBot and Savings Coach.
+- [x] Test interest-free forecasts and coaching safeguards; verify zakah lessons and SaveBot in the browser.
+- [x] Add an accessible Islamic money guide including zakah eligibility, recipients and virtual giving records.
+- [x] Verify device giving records persist and shared coaching safeguards recognize zakah terminology.
+- [ ] Verify authenticated Savings Coach and cross-device giving persistence — blocked because no Cloud account has signed up; local giving flow and 18 unit tests pass.
